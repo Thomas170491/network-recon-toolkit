@@ -1,4 +1,5 @@
-from .port_db import PORTS, BANNER_KEYWORDS
+from port_db import PORTS, BANNER_KEYWORDS
+import re 
 
 def parse_service_banner(banner :str ,port :int) -> str : 
     """
@@ -18,21 +19,36 @@ def parse_service_banner(banner :str ,port :int) -> str :
     
     return 'Unknown'
 
-def extract_version(banner: str) -> str:
+def extract_version(banner: str, service_name: str) -> str:
     """
-    Try to parse a version number from the banner string.
-    Example: "SSH-2.0-OpenSSH_6.6.1p1 Ubuntu-2ubuntu2.13" -> "OpenSSH 6.6.1"
+    Try to extract a version number from a banner string.
+    Currently supports SSH and HTTP.
     """
-    import re
 
-    # SSH example
-    ssh_match = re.search(r"OpenSSH[_\- ]?([\d\.]+)", banner, re.IGNORECASE)
-    if ssh_match:
-        return f"OpenSSH {ssh_match.group(1)}"
+    # ---- SSH ----
+    if service_name == "SSH":
+        ssh_match = re.search(r"OpenSSH[_\- ]?([\d\.]+)", banner, re.IGNORECASE)
+        if ssh_match:
+            return f"OpenSSH {ssh_match.group(1)}"
 
-    # HTTP example
-    http_match = re.search(r"HTTP/[\d\.]+ (\d{3})", banner, re.IGNORECASE)
-    if http_match:
-        return f"HTTP {http_match.group(1)}"
+    # ---- HTTP ----
+    if service_name == "HTTP":
+        # Extract status code
+        http_match = re.search(r"HTTP/[\d\.]+\s+(\d{3})", banner, re.IGNORECASE)
+        if http_match:
+            return f"HTTP {http_match.group(1)}"
+
+        # Optionally extract server software
+        server_match = re.search(r"Server: ([\w\-/\.]+)", banner, re.IGNORECASE)
+        if server_match:
+            return server_match.group(1)
+
+    # ---- FTP (example) ----
+    if service_name == "FTP":
+        ftp_match = re.search(r"FTP[\s\-]?([\d\.]+)", banner, re.IGNORECASE)
+        if ftp_match:
+            return ftp_match.group(1)
+
+    # Add more services here if needed
 
     return ""
