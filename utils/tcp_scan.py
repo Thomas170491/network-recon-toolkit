@@ -11,7 +11,7 @@ def scan_port(target :str , port :int) :
 
             #Try to connect to the target on the given port
             #commect_ex returns 0 if the connection is successful (port is open)
-            result = s.connect_ex((target,port))
+            result = s.connect_ex(( target,port))
 
             if result ==0 : 
                 return port
@@ -41,6 +41,8 @@ def scan_port_range(target: str, start: int, end: int):
             if result:
                 open_ports.append(result)
                 print(f"[OPEN] Port {result}")
+
+    
 
     return open_ports
 

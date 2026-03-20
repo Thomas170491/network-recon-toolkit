@@ -9,7 +9,7 @@ def main() :
     args = parser.parse_args()  #Reads what users input in  the terminal
 
     try :
-        start,end = map(int, args.ports.split(("-")))
+        start,end = map(int, args.ports.split("-"))
 
         if start < 1 or end > 65535 or start > end :
             raise ValueError
@@ -18,9 +18,14 @@ def main() :
         print("Invalid port range. Use format like 1-1024 and valid port numbers (1-65535).")
         return  
     
-    scan_port_range(args.target, args.port)
+    open_ports = scan_port_range(args.target, start, end)
 
-    if __name__ == "__main__" :
+    print("\nScan complete.")
+    print(f"Open ports: {open_ports}")
+
+
+    
+if __name__ == "__main__" :
         main()
 
 
