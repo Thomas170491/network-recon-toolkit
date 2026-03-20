@@ -10,8 +10,7 @@ def grab_banner(target :str , port :int ) -> str  :
             s.sendall(b"HEAD / HTTP/1.1\r\nHost: example.com\r\n\r\n")
 
             banner = s.recv(1024)
-            return banner.decode(errors= 'ignore').split("\n")[0]
-
+            return banner.decode(errors="ignore").split("\n")[0].strip()
 
 
 

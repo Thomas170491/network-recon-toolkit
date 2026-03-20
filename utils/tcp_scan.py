@@ -41,7 +41,7 @@ def scan_port_range(target: str, start: int, end: int):
             result = future.result()
             if result:
                 banner = grab_banner(target,result)
-                open_ports.append(result)
+                open_ports.append((result, banner))
                 print(f"[OPEN] Port {result} -> {banner}")
 
     

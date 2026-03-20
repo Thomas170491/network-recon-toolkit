@@ -21,7 +21,10 @@ def main() :
     open_ports = scan_port_range(args.target, start, end)
 
     print("\nScan complete.")
-    print(f"Open ports: {open_ports}")
+
+    for port, banner in sorted(open_ports):
+        print(f"Port {port} → {banner}")
+  
 
 
     
