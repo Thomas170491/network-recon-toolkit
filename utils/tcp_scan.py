@@ -1,5 +1,6 @@
 import socket
 from concurrent.futures import ThreadPoolExecutor,as_completed
+from utils.banner import grab_banner
 
 def scan_port(target :str , port :int) :
     try:
@@ -39,8 +40,9 @@ def scan_port_range(target: str, start: int, end: int):
         for future in as_completed(futures):
             result = future.result()
             if result:
+                banner = grab_banner(target,result)
                 open_ports.append(result)
-                print(f"[OPEN] Port {result}")
+                print(f"[OPEN] Port {result} -> {banner}")
 
     
 
