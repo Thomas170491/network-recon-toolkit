@@ -22,7 +22,7 @@ def parse_service_banner(banner :str ,port :int) -> str :
 def extract_version(banner: str, service_name: str) -> str:
     """
     Try to extract a version number from a banner string.
-    Currently supports SSH and HTTP.
+    Currently supports SSH HTTP and FTP.
     """
 
     # ---- SSH ----
@@ -43,7 +43,7 @@ def extract_version(banner: str, service_name: str) -> str:
         if server_match:
             return server_match.group(1)
 
-    # ---- FTP (example) ----
+    # ---- FTP  ----
     if service_name == "FTP":
         ftp_match = re.search(r"FTP[\s\-]?([\d\.]+)", banner, re.IGNORECASE)
         if ftp_match:
