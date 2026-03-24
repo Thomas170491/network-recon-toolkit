@@ -1,4 +1,4 @@
-from port_db import PORTS, BANNER_KEYWORDS
+from .port_db import PORTS, BANNER_KEYWORDS
 import re 
 
 def parse_service_banner(banner :str ,port :int) -> str : 
@@ -11,7 +11,7 @@ def parse_service_banner(banner :str ,port :int) -> str :
     for keyword, service_name in BANNER_KEYWORDS.items() :
         if keyword.lower() in banner.lower() :
             #append version if available
-            version = extract_version(banner) # added in later
+            version = extract_version(banner,service_name) # added in later
             return f"{service_name}{f' ({version})' if version else ''}"
     
     if port in PORTS :
@@ -36,7 +36,7 @@ def extract_version(banner: str, service_name: str) -> str:
         # Extract status code
         http_match = re.search(r"HTTP/[\d\.]+\s+(\d{3})", banner, re.IGNORECASE)
         if http_match:
-            return f"HTTP {http_match.group(1)}"
+            return f"Status {http_match.group(1)}"
 
         # Optionally extract server software
         server_match = re.search(r"Server: ([\w\-/\.]+)", banner, re.IGNORECASE)
@@ -51,4 +51,4 @@ def extract_version(banner: str, service_name: str) -> str:
 
     # Add more services here if needed
 
-    return ""
+    return None

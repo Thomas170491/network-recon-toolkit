@@ -1,5 +1,6 @@
 import argparse 
 from utils.tcp_scan import scan_port_range
+from utils.output import save_results_to_json
 
 def main() : 
     parser = argparse.ArgumentParser(description = "Network Recon Toolkit")
@@ -19,11 +20,10 @@ def main() :
         return  
     
     open_ports = scan_port_range(args.target, start, end)
-
-    print("\nScan complete.")
-
-    for port, banner in sorted(open_ports):
-        print(f"Port {port} → {banner}")
+    save_results_to_json(args.target, open_ports)
+    
+   
+    
   
 
 

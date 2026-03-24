@@ -10,11 +10,13 @@ def save_results_to_json(target :str , open_ports : list) :
     # Create a results directory if it doesn't exist
     os.makedirs("results", exist_ok="True")
 
+    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
     # Build data structure
     data = {
         "target " : target,
-        "time" : datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-        "open ports" : []
+        "time" : timestamp,
+        "open_ports" : []
     }
 
     for port, service, warning in open_ports :
@@ -25,7 +27,7 @@ def save_results_to_json(target :str , open_ports : list) :
         })
 
     # File name
-    filename = f"results/scan_{target}.json"
+    filename = f"results/scan_{target}_{timestamp}.json"
 
     # Save JSON
     with open(filename, "w") as f:

@@ -1,7 +1,9 @@
 import socket
 from concurrent.futures import ThreadPoolExecutor,as_completed
-from utils import grab_banner
+from utils.banner import grab_banner
 from utils.service_parser import parse_service_banner
+from utils.vuln_checker  import check_vulnerability
+
 
 def scan_port(target :str , port :int) :
     try:
@@ -41,12 +43,25 @@ def scan_port_range(target: str, start: int, end: int):
         for future in as_completed(futures):
             result = future.result()
             if result:
+                #Grab banner
                 banner = grab_banner(target,result)
-                service = parse_service_banner(banner, result)
-                open_ports.append((result, service))
-                print(f"[OPEN] Port {result} -> {banner}")
 
-    
+                #Detect ervice and version
+                service = parse_service_banner(banner, result)
+
+                #Check vulnerabilities
+                warning = check_vulnerability(service)
+
+                #Store results 
+                open_ports.append((result, service,warning))
+        print("\nScan complete.\n")
+
+        for port, service, warning in sorted(open_ports):
+            if warning:
+                print(f"[OPEN] Port {port} -> {service} -> {warning}")
+            else :    
+                print(f"[OPEN] Port {port} -> {service}")
+
 
     return open_ports
 
