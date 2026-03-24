@@ -1,11 +1,13 @@
 import argparse 
 from utils.tcp_scan import scan_port_range
 from utils.output import save_results_to_json
+from utils.os_detection import detect_os
 
 def main() : 
     parser = argparse.ArgumentParser(description = "Network Recon Toolkit")
     parser.add_argument("target", help= "Target IP or hostname")
     parser.add_argument("ports", help= "Port range (eg. 1-1024)")
+    parser.add_argument("--os", action="store_true", help="Perform OS detection")
 
     args = parser.parse_args()  #Reads what users input in  the terminal
 
@@ -21,6 +23,11 @@ def main() :
     
     open_ports = scan_port_range(args.target, start, end)
     save_results_to_json(args.target, open_ports)
+
+    # OS detection
+    if args.os:
+        os_guess = detect_os(args.target)
+        print(f"\nTarget OS guess: {os_guess}")
     
    
     
