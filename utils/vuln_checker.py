@@ -22,3 +22,24 @@ def extract_software_and_version(service_label : str) :
         return software, version
     
     return None, None
+
+def version_to_tuple(version :str ) :
+    numbers = re.findall(r"\d+", version )
+    return tuple(map(int,numbers))
+
+def check_vulnerability(service_label: str) -> str:
+    software, version = extract_software_and_version(service_label)
+
+    if not software or not version:
+        return ""
+
+    if software in VULNERABILITIES:
+        current_version = version_to_tuple(version)
+
+        for threshold, warning in VULNERABILITIES[software]:
+            threshold_version = version_to_tuple(threshold)
+
+            if current_version <= threshold_version:
+                return warning
+
+    return ""
