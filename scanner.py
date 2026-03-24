@@ -7,7 +7,12 @@ def main() :
     parser = argparse.ArgumentParser(description = "Network Recon Toolkit")
     parser.add_argument("target", help= "Target IP or hostname")
     parser.add_argument("ports", help= "Port range (eg. 1-1024)")
+    parser.add_argument("--banner", action="store_true", help="Grab service banners")
     parser.add_argument("--os", action="store_true", help="Perform OS detection")
+    parser.add_argument("--udp", action="store_true", help="Scan UDP ports")
+    parser.add_argument("--output", choices=["json","csv"], default="json", help="Output format")
+    parser.add_argument("--threads", type=int, default=100, help="Number of threads")
+    parser.add_argument("--timeout", type=float, default=1.0, help="Socket timeout in seconds")
 
     args = parser.parse_args()  #Reads what users input in  the terminal
 
@@ -21,7 +26,16 @@ def main() :
         print("Invalid port range. Use format like 1-1024 and valid port numbers (1-65535).")
         return  
     
-    open_ports = scan_port_range(args.target, start, end)
+    
+    open_ports = scan_port_range(
+    args.target,
+    start,
+    end,
+    threads=args.threads,
+    timeout=args.timeout,
+    banner=args.banner 
+    )
+    
     save_results_to_json(args.target, open_ports)
 
     # OS detection
