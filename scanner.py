@@ -1,7 +1,7 @@
 import argparse
 from utils.tcp_scan import scan_port_range
 from utils.udp_scan import scan_udp_range
-from utils.output import save_results_to_json
+from utils.output import save_results_to_json, save_results_to_csv
 from utils.os_detection import detect_os
 
 
@@ -38,7 +38,7 @@ def main():
         timeout=args.timeout,
         banner=args.banner
     )
-    print("DEBUG tcp_ports :", tcp_ports)
+    
 
     for port, service, warning in tcp_ports:
         open_ports.append({
@@ -87,7 +87,10 @@ def main():
     # --- Save JSON ---
     if args.output == "json":
         save_results_to_json(args.target, open_ports, os_guess)
-
-
+    
+    # --- Save CSV ---
+    if args.output == 'csv' :
+        save_results_to_csv(args.target,open_ports, os_guess)
+        
 if __name__ == "__main__":
     main()
