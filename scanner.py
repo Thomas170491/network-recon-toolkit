@@ -9,12 +9,12 @@ def main():
     parser = argparse.ArgumentParser(description="Network Recon Toolkit")
     parser.add_argument("target", help="Target IP or hostname")
     parser.add_argument("ports", help="Port range (eg. 1-1024)")
-    parser.add_argument("--banner", action="store_true", help="Grab service banners")
+    parser.add_argument("--banner", action="store_true", help="Grab service banners + vulnerability detection")
     parser.add_argument("--os", action="store_true", help="Perform OS detection")
     parser.add_argument("--udp", action="store_true", help="Scan UDP ports")
     parser.add_argument("--output", choices=["json", "csv"], default="json", help="Output format (default json)")
-    parser.add_argument("--threads", type=int, default=100, help="Number of threads")
-    parser.add_argument("--timeout", type=float, default=1.0, help="Socket timeout in seconds")
+    parser.add_argument("--threads", type=int, default=100, help="Number of threads (default 100)")
+    parser.add_argument("--timeout", type=float, default=1.0, help="Socket timeout in seconds (default 1.0 seconds)")
 
     args = parser.parse_args()
 
