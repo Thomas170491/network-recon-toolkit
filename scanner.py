@@ -12,7 +12,7 @@ def main():
     parser.add_argument("--banner", action="store_true", help="Grab service banners")
     parser.add_argument("--os", action="store_true", help="Perform OS detection")
     parser.add_argument("--udp", action="store_true", help="Scan UDP ports")
-    parser.add_argument("--output", choices=["json", "csv"], default="json", help="Output format")
+    parser.add_argument("--output", choices=["json", "csv"], default="json", help="Output format (default json)")
     parser.add_argument("--threads", type=int, default=100, help="Number of threads")
     parser.add_argument("--timeout", type=float, default=1.0, help="Socket timeout in seconds")
 
@@ -91,6 +91,6 @@ def main():
     # --- Save CSV ---
     if args.output == 'csv' :
         save_results_to_csv(args.target,open_ports, os_guess)
-        
+
 if __name__ == "__main__":
     main()
