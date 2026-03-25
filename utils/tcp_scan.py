@@ -1,72 +1,64 @@
 import socket
-from concurrent.futures import ThreadPoolExecutor,as_completed
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from utils.banner import grab_banner
 from utils.service_parser import parse_service_banner
-from utils.vuln_checker  import check_vulnerability
+from utils.vuln_checker import check_vulnerability
 
 
-def scan_port(target :str , port :int) :
+def scan_port(target: str, port: int, timeout: float):
+    """
+    Scan a single TCP port.
+    Return the port number if open, otherwise None.
+    """
     try:
-        #Creation of a TCP socket
-        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s :
+        with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+            s.settimeout(timeout)
+            result = s.connect_ex((target, port))
 
-            #Set a timeout so the scan doesn't hang too long
-            s.settimeout(0.5)
-
-            #Try to connect to the target on the given port
-            #commect_ex returns 0 if the connection is successful (port is open)
-            result = s.connect_ex(( target,port))
-
-            if result ==0 : 
+            if result == 0:
                 return port
-            
-    except Exception :
+
+    except Exception:
         pass
 
     return None
 
-def scan_port_range(target: str, start: int, end: int):
-    
-    print(f"Scanning {target} from port {start} to {end}...\n")
 
+def scan_port_range(
+    target: str,
+    start: int,
+    end: int,
+    threads: int = 100,
+    timeout: float = 1.0,
+    banner: bool = False
+):
+    """
+    Scan a range of TCP ports.
+    Returns a list of tuples:
+    (port, service, warning)
+    """
     open_ports = []
 
-    with ThreadPoolExecutor(max_workers=100) as executor:
-        
-        # Submit all tasks and store futures
+    with ThreadPoolExecutor(max_workers=threads) as executor:
         futures = [
-            executor.submit(scan_port, target, port)
+            executor.submit(scan_port, target, port, timeout)
             for port in range(start, end + 1)
         ]
 
-        # Process results as they complete (NOT in order)
         for future in as_completed(futures):
             result = future.result()
+
             if result:
-                #Grab banner
-                banner = grab_banner(target,result)
+                port = result
 
-                #Detect ervice and version
-                service = parse_service_banner(banner, result)
+                if banner:
+                    raw_banner = grab_banner(target, port)
+                else:
+                    raw_banner = ""
 
-                #Check vulnerabilities
+                service = parse_service_banner(raw_banner, port)
                 warning = check_vulnerability(service)
 
-                #Store results 
-                open_ports.append((result, service,warning))
-        print("\nScan complete.\n")
+                open_ports.append((port, service, warning))
 
-        for port, service, warning in sorted(open_ports):
-            if warning:
-                print(f"[OPEN] Port {port} -> {service} -> {warning}")
-            else :    
-                print(f"[OPEN] Port {port} -> {service}")
-
-
-    return open_ports
-
-
-
-
-
-
+    return sorted(open_ports)
