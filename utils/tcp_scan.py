@@ -48,7 +48,7 @@ def scan_port_range(
         for future in as_completed(futures):
             result = future.result()
 
-            if result:
+            if result is not None:
                 port = result
 
                 if banner:
@@ -61,4 +61,4 @@ def scan_port_range(
 
                 open_ports.append((port, service, warning))
 
-    return sorted(open_ports)
+    return open_ports

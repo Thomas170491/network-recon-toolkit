@@ -38,6 +38,7 @@ def main():
         timeout=args.timeout,
         banner=args.banner
     )
+    print("DEBUG tcp_ports :", tcp_ports)
 
     for port, service, warning in tcp_ports:
         open_ports.append({
