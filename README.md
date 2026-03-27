@@ -81,6 +81,7 @@ Detected OS: Linux/Unix
 
 ### JSON
 
+```json
 {
   "target": "scanme.nmap.org",
   "scan_time": "2026-03-25_14-32-10",
@@ -102,12 +103,18 @@ Detected OS: Linux/Unix
   ]
 }
 
+```
+
 ### CSV
+
+```csv
 
 Port,Protocol,Service,Warning
 22,TCP,SSH (OpenSSH 6.6.1),⚠️ Very outdated OpenSSH
 80,TCP,HTTP (Status 200),
 53,UDP,Unknown,
+
+```
 
 ## 🧠 How It Works
 
@@ -151,22 +158,22 @@ The author is not responsible for any misuse or illegal activity.
  
 ### Terminal scan output
 
-![App Screenshot](images/screenshots_scanner/Terminal_output.png)
+![Terminal Scan](images/screenshots_scanner/Terminal_output.png)
 
 ### JSON result files
 
-![App Screenshot](images/screenshots_scanner/JSON_output_standand.png)
+![JSON output](images/screenshots_scanner/JSON_output_standand.png)
 
-![App Screenshot](images/screenshots_scanner/JSON_output_OS_detection.png)
+![OS detection](images/screenshots_scanner/JSON_output_OS_detection.png)
 
 
-![App Screenshot](images/screenshots_scanner/JSON_output_banner_grabbing.png)
+![banner grabbing](images/screenshots_scanner/JSON_output_banner_grabbing.png)
 
 
 ### CSV export
 
 
-![App Screenshot](images/screenshots_scanner/CSV_output.png)
+![CSV output](images/screenshots_scanner/CSV_output.png)
 
 ## 🛠️ Future Improvements
 
