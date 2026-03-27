@@ -158,22 +158,22 @@ The author is not responsible for any misuse or illegal activity.
  
 ### Terminal scan output
 
-![Terminal Scan](images/screenshots_scanner/Terminal_output.png)
+![Terminal Scan](screenshots_scanner/Terminal_output.png)
 
 ### JSON result files
 
-![JSON output](images/screenshots_scanner/JSON_output_standard.png)
+![JSON output](Images/screenshots_scanner/JSON_output_standard.png)
 
-![OS detection](images/screenshots_scanner/JSON_output_OS_detection.png)
+![OS detection](Images/screenshots_scanner/JSON_output_OS_detection.png)
 
 
-![banner grabbing](images/screenshots_scanner/JSON_output_banner_grabbing.png)
+![banner grabbing](Images/screenshots_scanner/JSON_output_banner_grabbing.png)
 
 
 ### CSV export
 
 
-![CSV output](images/screenshots_scanner/CSV_output.png)
+![CSV output](Images/screenshots_scanner/CSV_output.png)
 
 ## 🛠️ Future Improvements
 
@@ -185,6 +185,7 @@ Output formatting enhancements (colors, tables)
 ## 📌 Author
 Thomas Papas
 GitHub: https://github.com/Thomas170491⁠�
+linkedIn : https://www.linkedin.com/in/thomas-papas-06aa35167/
 
 ## ⭐ Acknowledgements
 Inspired by tools like Nmap and standard network reconnaissance techniques.
