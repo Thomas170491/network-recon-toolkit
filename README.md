@@ -162,7 +162,7 @@ The author is not responsible for any misuse or illegal activity.
 
 ### JSON result files
 
-![JSON output](images/screenshots_scanner/JSON_output_standand.png)
+![JSON output](images/screenshots_scanner/JSON_output_standard.png)
 
 ![OS detection](images/screenshots_scanner/JSON_output_OS_detection.png)
 
