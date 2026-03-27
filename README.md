@@ -23,7 +23,7 @@ It performs TCP and UDP port scanning, service detection, version parsing, vulne
 ## ⚙️ Installation
 
 bash
-git clone https://github.com/YOUR_USERNAME/network-recon-toolkit.git
+git clone https://github.com/Thomas170491/network-recon-toolkit.git
 cd network-recon-toolkit
 
 # (optional but recommended)
