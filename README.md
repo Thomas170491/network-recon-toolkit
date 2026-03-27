@@ -153,7 +153,7 @@ This tool is intended for educational purposes and authorized security testing o
 Do NOT scan systems without explicit permission.
 The author is not responsible for any misuse or illegal activity.
 
-##📸 Screenshots
+## 📸 Screenshots
 
  
 ### Terminal scan output
