@@ -162,18 +162,18 @@ The author is not responsible for any misuse or illegal activity.
 
 ### JSON result files
 
-![JSON output](Images/screenshots_scanner/JSON_output_standard.png)
+![JSON output](screenshots_scanner/JSON_output_standard.png)
 
-![OS detection](Images/screenshots_scanner/JSON_output_OS_detection.png)
+![OS detection](screenshots_scanner/JSON_output_OS_detection.png)
 
 
-![banner grabbing](Images/screenshots_scanner/JSON_output_banner_grabbing.png)
+![banner grabbing](screenshots_scanner/JSON_output_banner_grabbing.png)
 
 
 ### CSV export
 
 
-![CSV output](Images/screenshots_scanner/CSV_output.png)
+![CSV output](screenshots_scanner/CSV_output.png)
 
 ## 🛠️ Future Improvements
 
