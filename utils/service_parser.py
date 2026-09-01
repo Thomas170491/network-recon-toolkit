@@ -40,26 +40,26 @@ def extract_version(banner: str, service_name: str) -> str:
         re.IGNORECASE | re.MULTILINE,
     )
 
-    if server_match:
-        server_value = server_match.group(1).strip()
+        if server_match:
+            server_value = server_match.group(1).strip()
 
-        version_match = re.match(
-            r"([A-Za-z0-9._-]+)[/\s-]+(\d+(?:\.\d+)+)",
-            server_value,
+            version_match = re.match(
+                r"([A-Za-z0-9._-]+)[/\s-]+(\d+(?:\.\d+)+)",
+                server_value,
+            )
+
+            if version_match:
+                software = version_match.group(1)
+                version = version_match.group(2)
+
+                return f"{software} {version}"
+
+        # Fall back to HTTP status when no server/version is available.
+        http_match = re.search(
+            r"HTTP/[\d\.]+\s+(\d{3})",
+            banner,
+            re.IGNORECASE,
         )
-
-        if version_match:
-            software = version_match.group(1)
-            version = version_match.group(2)
-
-            return f"{software} {version}"
-
-    # Fall back to HTTP status when no server/version is available.
-    http_match = re.search(
-        r"HTTP/[\d\.]+\s+(\d{3})",
-        banner,
-        re.IGNORECASE,
-    )
 
     if http_match:
         return f"Status {http_match.group(1)}"
