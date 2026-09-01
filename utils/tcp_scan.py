@@ -34,8 +34,9 @@ def scan_port_range(
 ):
     """
     Scan a range of TCP ports.
+
     Returns a list of tuples:
-    (port, service, warning)
+    (port, service, warning, cves)
     """
     open_ports = []
 

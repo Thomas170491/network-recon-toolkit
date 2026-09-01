@@ -6,7 +6,7 @@ from datetime import datetime
 def save_results_to_json(target: str, open_ports: list, os_guess=None):
     """
     Save scan results to a JSON file.
-    open_ports format: [(port, service, warning), ...]
+    open_ports contains structured scan-result dictionaries.
     """
 
     # Create results directory
@@ -49,17 +49,23 @@ def save_results_to_csv(target :str, open_ports : dict, os_guess=None) :
         writer.writerow([])
 
         # Header
-        writer.writerow(["Port", "Protocol", "Service", "Warning"])
+        writer.writerow([
+                "Port",
+                "Protocol",
+                "Service",
+                "Warning",
+                "CVEs",
+            ])
 
         # Data
         for entry in open_ports:
-            writer.writerow([
-                entry.get("port"),
-                entry.get("protocol"),
-                entry.get("service"),
-                entry.get("warning")
-            ])
-
+           writer.writerow([
+            entry.get("port"),
+            entry.get("protocol"),
+            entry.get("service"),
+            entry.get("warning"),
+            ", ".join(entry.get("cves", [])),
+        ])
     print(f"\n[INFO] Results saved to {filename}")
 
 
