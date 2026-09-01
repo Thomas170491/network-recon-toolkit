@@ -22,23 +22,27 @@ def parse_service_banner(banner :str ,port :int) -> str :
 def extract_version(banner: str, service_name: str) -> str:
     """
     Try to extract a version number from a banner string.
-    Currently supports SSH HTTP and FTP.
+    Currently supports SSH, HTTP, and FTP.
     """
 
     # ---- SSH ----
     if service_name == "SSH":
-        ssh_match = re.search(r"OpenSSH[_\- ]?([\d\.]+)", banner, re.IGNORECASE)
+        ssh_match = re.search(
+            r"OpenSSH[_\- ]?([\d\.]+)",
+            banner,
+            re.IGNORECASE,
+        )
+
         if ssh_match:
             return f"OpenSSH {ssh_match.group(1)}"
 
     # ---- HTTP ----
     if service_name == "HTTP":
-    # Prefer server software/version when exposed by the server.
         server_match = re.search(
-        r"^Server:\s*([^\r\n]+)",
-        banner,
-        re.IGNORECASE | re.MULTILINE,
-    )
+            r"^Server:\s*([^\r\n]+)",
+            banner,
+            re.IGNORECASE | re.MULTILINE,
+        )
 
         if server_match:
             server_value = server_match.group(1).strip()
@@ -54,22 +58,24 @@ def extract_version(banner: str, service_name: str) -> str:
 
                 return f"{software} {version}"
 
-        # Fall back to HTTP status when no server/version is available.
         http_match = re.search(
             r"HTTP/[\d\.]+\s+(\d{3})",
             banner,
             re.IGNORECASE,
         )
 
-    if http_match:
-        return f"Status {http_match.group(1)}"
+        if http_match:
+            return f"Status {http_match.group(1)}"
 
-    # ---- FTP  ----
+    # ---- FTP ----
     if service_name == "FTP":
-        ftp_match = re.search(r"FTP[\s\-]?([\d\.]+)", banner, re.IGNORECASE)
+        ftp_match = re.search(
+            r"FTP[\s\-]?([\d\.]+)",
+            banner,
+            re.IGNORECASE,
+        )
+
         if ftp_match:
             return ftp_match.group(1)
-
-    # Add more services here if needed
 
     return None

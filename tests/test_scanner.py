@@ -161,3 +161,11 @@ def test_apache_older_version_does_not_get_41773():
     )
 
     assert "CVE-2021-41773" not in result["cves"]
+
+def test_unknown_ssh_version_does_not_crash():
+    result = extract_version(
+        "SSH custom-server",
+        "SSH",
+    )
+
+    assert result is None
