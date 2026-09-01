@@ -33,15 +33,36 @@ def extract_version(banner: str, service_name: str) -> str:
 
     # ---- HTTP ----
     if service_name == "HTTP":
-        # Extract status code
-        http_match = re.search(r"HTTP/[\d\.]+\s+(\d{3})", banner, re.IGNORECASE)
-        if http_match:
-            return f"Status {http_match.group(1)}"
+    # Prefer server software/version when exposed by the server.
+        server_match = re.search(
+        r"^Server:\s*([^\r\n]+)",
+        banner,
+        re.IGNORECASE | re.MULTILINE,
+    )
 
-        # Optionally extract server software
-        server_match = re.search(r"Server: ([\w\-/\.]+)", banner, re.IGNORECASE)
-        if server_match:
-            return server_match.group(1)
+    if server_match:
+        server_value = server_match.group(1).strip()
+
+        version_match = re.match(
+            r"([A-Za-z0-9._-]+)[/\s-]+(\d+(?:\.\d+)+)",
+            server_value,
+        )
+
+        if version_match:
+            software = version_match.group(1)
+            version = version_match.group(2)
+
+            return f"{software} {version}"
+
+    # Fall back to HTTP status when no server/version is available.
+    http_match = re.search(
+        r"HTTP/[\d\.]+\s+(\d{3})",
+        banner,
+        re.IGNORECASE,
+    )
+
+    if http_match:
+        return f"Status {http_match.group(1)}"
 
     # ---- FTP  ----
     if service_name == "FTP":

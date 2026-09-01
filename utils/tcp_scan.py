@@ -2,7 +2,7 @@ import socket
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from utils.banner import grab_banner
 from utils.service_parser import parse_service_banner
-from utils.vuln_checker import check_vulnerability
+from utils.vuln_checker import check_vulnerability_details
 
 
 def scan_port(target: str, port: int, timeout: float):
@@ -57,8 +57,15 @@ def scan_port_range(
                     raw_banner = ""
 
                 service = parse_service_banner(raw_banner, port)
-                warning = check_vulnerability(service)
+                vulnerability = check_vulnerability_details(service)
 
-                open_ports.append((port, service, warning))
+                open_ports.append(
+                    (
+                        port,
+                        service,
+                        vulnerability["warning"],
+                        vulnerability["cves"],
+                    )
+                )
 
     return open_ports

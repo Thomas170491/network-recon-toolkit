@@ -1,191 +1,381 @@
 # 🔍 Network Recon Toolkit
 
-A Python-based network reconnaissance tool inspired by Nmap.  
-It performs TCP and UDP port scanning, service detection, version parsing, vulnerability detection with CVE references, OS fingerprinting, and exports results in JSON or CSV format.
+A Python-based network reconnaissance toolkit inspired by Nmap.
+
+The project performs TCP and UDP port scanning, banner grabbing, basic service and version detection, local vulnerability checks, TTL-based OS fingerprinting, and structured JSON/CSV reporting.
+
+The vulnerability component uses a deliberately small local database for educational purposes. Specific CVE identifiers are reported only when the toolkit contains an explicit version-to-CVE mapping.
 
 ---
 
 ## 🚀 Features
 
-- ✅ TCP Connect Port Scanning
-- ✅ UDP Port Scanning (open / filtered detection)
-- ✅ Banner Grabbing
-- ✅ Service Detection (banner + port fallback)
-- ✅ Version Extraction
-- ✅ Vulnerability Detection with CVE references
-- ✅ OS Detection (TTL-based)
-- ✅ Multithreaded Scanning
-- ✅ JSON & CSV Export
-- ✅ CLI Interface with configurable options
+- TCP connect port scanning
+- UDP scanning with open / filtered detection
+- Multithreaded scanning
+- Configurable thread count and socket timeout
+- Banner grabbing
+- Service identification
+- Basic software version extraction
+- Local version-based vulnerability checks
+- Structured CVE references for explicitly mapped vulnerabilities
+- TTL-based OS estimation
+- JSON export
+- CSV export
+- Command-line interface
 
 ---
 
 ## ⚙️ Installation
 
-bash
+```bash
 git clone https://github.com/Thomas170491/network-recon-toolkit.git
 cd network-recon-toolkit
 
-# (optional but recommended)
-python -m venv venv
-source venv/bin/activate   # Linux / Mac
-venv\Scripts\activate      # Windows
+python3 -m venv .venv
+source .venv/bin/activate
+
+python -m pip install -r requirements.txt
+```
+
+On Windows:
+
+```powershell
+python -m venv .venv
+.venv\Scripts\activate
+python -m pip install -r requirements.txt
+```
+
+---
 
 ## 🧪 Usage
 
 ### Basic TCP scan
- 
+
 ```bash
 python scanner.py scanme.nmap.org 20-100
 ```
 
-### With banner grabbing
+### Banner grabbing and service analysis
 
 ```bash
 python scanner.py scanme.nmap.org 20-100 --banner
 ```
 
-### Full scan (recommended)
+### UDP scan
 
 ```bash
-python scanner.py scanme.nmap.org 1-1000 --banner  --os
+python scanner.py scanme.nmap.org 20-100 --udp
 ```
+
+### OS estimation
+
+```bash
+python scanner.py scanme.nmap.org 1-1000 --banner --os
+```
+
 ### Custom performance settings
 
 ```bash
-python scanner.py scanme.nmap.org 1-1000 --threads 200 --timeout 0.5
-```   
+python scanner.py scanme.nmap.org 1-1000 \
+    --threads 200 \
+    --timeout 0.5
+```
 
-### Export results
+### JSON output
 
 ```bash
-# JSON (default)
-python scanner.py scanme.nmap.org 20-100 --output json 
-
-
-# CSV
-python scanner.py scanme.nmap.org 20-100 --output csv
+python scanner.py scanme.nmap.org 20-100 \
+    --banner \
+    --output json
 ```
+
+### CSV output
+
+```bash
+python scanner.py scanme.nmap.org 20-100 \
+    --banner \
+    --output csv
+```
+
+---
 
 ## 🖥️ Example Output
 
-```bash
-[OPEN] TCP Port 22 -> SSH (OpenSSH 6.6.1) -> ⚠️ Very outdated OpenSSH
-[OPEN] TCP Port 80 -> HTTP (Status 200)
-[OPEN] UDP Port 53
+Example terminal output may look like:
+
+```text
+[OPEN] TCP Port 22 -> SSH (OpenSSH 6.6.1) -> ⚠️ Very outdated OpenSSH - multiple known vulnerabilities
+[OPEN] TCP Port 80 -> HTTP (Apache 2.4.49) -> ⚠️ Apache 2.4.49 vulnerable to path traversal -> CVEs: CVE-2021-41773
 
 Detected OS: Linux/Unix
 ```
+
+Actual results depend on the services and banners exposed by the target.
+
+---
 
 ## 📁 Output Formats
 
 ### JSON
 
+Results are exported as structured data:
+
 ```json
 {
-  "target": "scanme.nmap.org",
-  "scan_time": "2026-03-25_14-32-10",
-  "os_guess": "Linux/Unix",
-  "open_ports": [
-    {
-      "port": 22,
-      "protocol": "TCP",
-      "service": "SSH (OpenSSH 6.6.1)",
-      "warning": "⚠️ Very outdated OpenSSH",
-      "cves": ["CVE-2016-0777"]
-    },
-    {
-      "port": 80,
-      "protocol": "TCP",
-      "service": "HTTP (Status 200)",
-      "warning": null
-    }
-  ]
+    "target": "example-host",
+    "scan_time": "2026-09-01_15-30-00",
+    "os_guess": "Linux/Unix",
+    "open_ports": [
+        {
+            "port": 80,
+            "protocol": "TCP",
+            "service": "HTTP (Apache 2.4.49)",
+            "warning": "⚠️ Apache 2.4.49 vulnerable to path traversal",
+            "cves": [
+                "CVE-2021-41773"
+            ]
+        },
+        {
+            "port": 22,
+            "protocol": "TCP",
+            "service": "SSH (OpenSSH 9.3)",
+            "warning": "",
+            "cves": []
+        }
+    ]
 }
-
 ```
 
 ### CSV
 
 ```csv
-
-Port,Protocol,Service,Warning
-22,TCP,SSH (OpenSSH 6.6.1),⚠️ Very outdated OpenSSH
-80,TCP,HTTP (Status 200),
-53,UDP,Unknown,
-
+Port,Protocol,Service,Warning,CVEs
+80,TCP,HTTP (Apache 2.4.49),⚠️ Apache 2.4.49 vulnerable to path traversal,CVE-2021-41773
+22,TCP,SSH (OpenSSH 9.3),,
 ```
+
+---
 
 ## 🧠 How It Works
 
-### TCP Scan
-Uses socket.connect_ex() to determine if a port is open.
+### TCP Scanning
 
-### UDP Scan
-Sends UDP packets to target ports
-Interprets responses:
-Response → Open
-ICMP Port Unreachable → Closed
-No response → Open | Filtered
+The toolkit uses Python sockets and `connect_ex()` to determine whether TCP ports accept connections.
+
+Port ranges are processed concurrently using `ThreadPoolExecutor`.
+
+### UDP Scanning
+
+UDP probes are sent to selected ports.
+
+UDP results must be interpreted carefully because the absence of a response can mean either:
+
+```text
+Open
+or
+Open | Filtered
+```
+
+UDP scanning is therefore inherently less deterministic than TCP connect scanning.
 
 ### Banner Grabbing
-Attempts to extract service information by sending minimal requests (e.g., HTTP HEAD).
-Service Detection
-Matches known keywords in banners
-Falls back to known port-service mappings
+
+For open TCP ports, the scanner can request available service information and capture returned banner data.
+
+HTTP responses are preserved sufficiently to inspect headers such as:
+
+```text
+Server: Apache/2.4.49
+```
+
+### Service Detection
+
+The service parser first attempts to identify a service from banner content.
+
+If no useful banner information is available, the toolkit falls back to a local mapping of commonly used ports.
 
 ### Version Detection
-Uses regex to extract software versions from banners.
-Vulnerability Detection
-Matches detected services/versions against a local vulnerability database
-Includes CVE references for known issues
 
-### OS Detection
-Estimates OS based on TTL values from ping responses.
+Regular expressions extract software versions from supported service banners.
+
+For example:
+
+```text
+SSH-2.0-OpenSSH_9.3
+```
+
+can be normalized to:
+
+```text
+SSH (OpenSSH 9.3)
+```
+
+An HTTP response containing:
+
+```text
+Server: Apache/2.4.49
+```
+
+can be normalized to:
+
+```text
+HTTP (Apache 2.4.49)
+```
+
+### Vulnerability Checks
+
+Detected software and versions are compared against a small local vulnerability database.
+
+The database supports two types of findings:
+
+**General version warnings**
+
+Example:
+
+```text
+Very outdated OpenSSH - multiple known vulnerabilities
+```
+
+These warnings do not automatically receive CVE identifiers.
+
+**Explicit CVE mappings**
+
+When the toolkit contains a specific mapping between a software version and a vulnerability, the CVE is returned as structured data.
+
+For example:
+
+```text
+Apache 2.4.49
+    ↓
+CVE-2021-41773
+```
+
+The scanner intentionally does not invent CVE associations for versions that only trigger a general outdated-software warning.
+
+---
+
+## 🧪 Automated Tests
+
+The project includes automated tests for:
+
+- service parsing
+- SSH version extraction
+- HTTP status parsing
+- HTTP server/version extraction
+- fallback port identification
+- version normalization
+- vulnerability warnings
+- structured vulnerability results
+- CVE mapping
+- prevention of incorrect CVE assignment
+- end-to-end Apache banner-to-CVE detection
+
+Run the test suite with:
+
+```bash
+python -m pytest -v
+```
+
+Current test suite:
+
+```text
+16 passed
+```
+
+---
 
 ## ⚠️ Limitations
-UDP scanning is inherently unreliable (open vs open|filtered ambiguity)
-OS detection is heuristic-based (TTL approximation)
-Vulnerability detection uses a simplified local database (not exhaustive)
 
-## ⚖️ Legal Disclaimer
-This tool is intended for educational purposes and authorized security testing only.
-Do NOT scan systems without explicit permission.
-The author is not responsible for any misuse or illegal activity.
+This project is an educational network reconnaissance toolkit, not a replacement for Nmap or a production vulnerability scanner.
+
+Current limitations include:
+
+- UDP open/open-filtered ambiguity
+- heuristic TTL-based OS detection
+- limited service fingerprinting
+- limited banner parsing
+- small local vulnerability database
+- no live NVD or vendor-advisory integration
+- CVE coverage limited to explicitly configured mappings
+- version detection depends on services exposing useful banner information
+
+A missing vulnerability warning does **not** mean that a service is secure.
+
+---
+
+## 🔮 Future Improvements
+
+Potential future improvements include:
+
+- NVD or Vulners API integration
+- richer service fingerprinting
+- additional banner parsers
+- improved UDP service detection
+- CVSS severity information
+- vulnerability references and remediation guidance
+- expanded automated test coverage
+- improved terminal formatting
+
+---
+
+## ⚖️ Legal and Security Disclaimer
+
+This project is provided for **educational purposes, cybersecurity training, and authorized security testing only**.
+
+Only scan systems, networks, or services that you own or for which you have received explicit permission to test. Unauthorized network scanning or security testing may violate applicable laws, regulations, organizational policies, or terms of service.
+
+The vulnerability detection functionality in this toolkit is intentionally simplified. It relies on a small local database and basic service/version matching and therefore:
+
+- does not provide complete vulnerability coverage
+- may produce false positives or false negatives
+- does not replace professional vulnerability scanners
+- does not replace vendor security advisories or authoritative sources such as NVD
+- should not be used as the sole basis for security or remediation decisions
+
+A reported CVE indicates that the detected software/version matched an explicitly configured rule in the toolkit. It does **not** by itself confirm that the target system is exploitable.
+
+Likewise, the absence of a vulnerability warning does **not** mean that a system or service is secure.
+
+Users are responsible for ensuring that their use of this software is lawful, authorized, and appropriate for their environment.
+
+The author assumes no responsibility for misuse, unauthorized activity, damage, data loss, service disruption, or other consequences resulting from the use of this project.
+
+---
 
 ## 📸 Screenshots
 
- 
-### Terminal scan output
+### Terminal Scan Output
 
 ![Terminal Scan](screenshots_scanner/Terminal_output.png)
 
-### JSON result files
+### JSON Output
 
 ![JSON output](screenshots_scanner/JSON_output_standard.png)
 
+### OS Detection
+
 ![OS detection](screenshots_scanner/JSON_output_OS_detection.png)
 
+### Banner Grabbing
 
-![banner grabbing](screenshots_scanner/JSON_output_banner_grabbing.png)
+![Banner grabbing](screenshots_scanner/JSON_output_banner_grabbing.png)
 
-
-### CSV export
-
+### CSV Export
 
 ![CSV output](screenshots_scanner/CSV_output.png)
 
-## 🛠️ Future Improvements
-
-Advanced service fingerprinting
-API-based CVE integration (NVD / Vulners)
-Improved UDP service detection
-Output formatting enhancements (colors, tables)
+---
 
 ## 📌 Author
-Thomas Papas
-GitHub: https://github.com/Thomas170491⁠�
-linkedIn : https://www.linkedin.com/in/thomas-papas-06aa35167/
+
+**Thomas Papas**
+
+GitHub: https://github.com/Thomas170491  
+LinkedIn: https://www.linkedin.com/in/thomas-papas-06aa35167/
+
+---
 
 ## ⭐ Acknowledgements
-Inspired by tools like Nmap and standard network reconnaissance techniques.
+
+Inspired by Nmap and standard network reconnaissance techniques.

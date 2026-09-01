@@ -38,17 +38,17 @@ def main():
         timeout=args.timeout,
         banner=args.banner
     )
-    
-
-    for port, service, warning in tcp_ports:
+        
+    for port, service, warning, cves in tcp_ports:
         open_ports.append({
             "port": port,
             "protocol": "TCP",
             "service": service,
-            "warning": warning
+            "warning": warning,
+            "cves": cves,
         })
 
-    # --- UDP Scan ---
+        # --- UDP Scan ---
     if args.udp:
         udp_ports = scan_udp_range(
             args.target,
@@ -63,7 +63,8 @@ def main():
                 "port": port,
                 "protocol": "UDP",
                 "service": "Unknown",
-                "warning": None
+                "warning": None,
+                "cves": [],
             })
 
     # --- OS Detection ---
@@ -79,6 +80,9 @@ def main():
             line += f" -> {entry['service']}"
         if entry["warning"]:
             line += f" -> {entry['warning']}"
+        
+        if entry["cves"]:
+            line += f" -> CVEs: {', '.join(entry['cves'])}"
         print(line)
 
     if os_guess:
